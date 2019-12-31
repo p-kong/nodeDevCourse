@@ -42,5 +42,3 @@ const event = {
   },
 };
 event.printGuestList();
-
-//testing
