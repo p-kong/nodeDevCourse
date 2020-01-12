@@ -2,6 +2,14 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const socketio = require('socket.io');
+const Filter = require('bad-words');
+const { generateMessage, generateLocations } = require('./utils/messages');
+const {
+  addUser,
+  removeUser,
+  getUser,
+  getUsersInRoom,
+} = require('./utils/users');
 
 const app = express();
 const server = http.createServer(app);
@@ -15,22 +23,77 @@ app.use(express.static(publicDirectoryPath));
 
 // let count = 0;
 
-//connection is a built in event from socket.io
+//io.on is only for connection. This is a built in event from socket.io
 io.on('connection', socket => {
   console.log('new websocket connection');
-  socket.emit('message', 'welcome');
-  socket.on('sendMessage', message => {
-    io.emit('message', message);
+
+  //io.to.emit - emits an event to everyone in a specific room
+  //socket.broadcast.to.emit - emits an event to everone but the user in a specific room
+  socket.on('join', ({ username, room }, callback) => {
+    const { error, user } = addUser({ id: socket.id, username, room });
+
+    if (error) {
+      return callback(error);
+    }
+
+    socket.join(user.room);
+
+    //socket.emit - to a specific connection
+    socket.emit('message', generateMessage('Admin', 'Welcome!'));
+
+    //socket.broadcast.emit - sends a message to everyone but the user
+    socket.broadcast
+      .to(user.room)
+      .emit(
+        'message',
+        generateMessage('Admin:', `${user.username} has joined!`)
+      );
+    io.to(user.room).emit('roomData', {
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    });
+
+    callback();
   });
-  // //send event from the server to the client. Below is a custom event
-  // socket.emit('countUpdated', count);
-  // //the server is listening for the 'increment' event from the client and then performs the function (incrementing the count by 1)
-  // socket.on('increment', () => {
-  //   count++;
-  //   //socket.emit('countUpdated', count); - emits to a specific connection
-  //   //io.emit - emits to every single connection
-  //   io.emit('countUpdated', count);
-  // });
+
+  socket.on('sendMessage', (message, callback) => {
+    const user = getUser(socket.id);
+    const filter = new Filter();
+    if (filter.isProfane(message)) {
+      return callback('Profanity is not allowed!');
+    }
+    //io.emit - emits to every connected client
+    io.to(user.room).emit('message', generateMessage(user.username, message));
+    callback();
+  });
+
+  socket.on('sendLocation', (coordinates, callback) => {
+    const user = getUser(socket.id);
+    io.to(user.room).emit(
+      'locationMessage',
+      generateLocations(
+        user.username,
+        `https://www.google.com/maps?q=${coordinates.latitude},${coordinates.longitude}`
+      )
+    );
+    callback();
+  });
+
+  //disconnect is a built in event
+  socket.on('disconnect', () => {
+    let user = removeUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit(
+        'message',
+        generateMessage(`Admin: ${user.username} has left`)
+      );
+      io.to(user.room).emit('roomData', {
+        room: user.room,
+        users: getUsersInRoom(user.room),
+      });
+    }
+  });
 });
 
 //server instead of app.listen
