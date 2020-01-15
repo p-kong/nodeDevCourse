@@ -35,14 +35,27 @@
 // previously had the callback function after the call to the add function. **need to have it before
 // callback function incorrectly written (commented out)
 
-const add = (a, b, callback) => {
+// const add = (a, b, callback) => {
+//   setTimeout(() => {
+//     callback(a + b);
+//     // const sum = console.log(a + b);
+//     // callback(sum);
+//   }, 2000);
+// };
+
+// add(1, 4, sum => {
+//   console.log(sum); // Should print: 5
+// });
+
+const doWorkCallback = callback => {
   setTimeout(() => {
-    callback(a + b);
-    // const sum = console.log(a + b);
-    // callback(sum);
+    callback(undefined, [1, 4, 7]);
   }, 2000);
 };
 
-add(1, 4, sum => {
-  console.log(sum); // Should print: 5
+doWorkCallback((error, result) => {
+  if (error) {
+    return console.log(error);
+  }
+  console.log(result);
 });
