@@ -19,23 +19,77 @@ MongoClient.connect(
       return console.log('Unable to connect to database!');
     }
     const db = client.db(databaseName);
-    db.collection('tasks').findOne(
-      { _id: new ObjectID('5e1ce7cb6a688502626ff237') },
-      (error, task) => {
-        if (error) {
-          return console.log('Unable to find task ID');
-        }
-        console.log(task);
-      }
-    );
+    //=== UPDATE ONE ===
+    // db.collection('users')
+    //   .updateOne(
+    //     { _id: new ObjectID('5e1ce3f0285b110118c1c490') },
+    //     {
+    //       $inc: {
+    //         age: 1,
+    //       },
+    //     }
+    //   )
+    //   .then(result => {
+    //     console.log(result);
+    //   })
+    //   .catch(error => {
+    //     console.log('error', error);
+    //   });
 
+    //=== UPDATE MANY ===
+    // db.collection('tasks').updateMany({ $set: { completed: true } }).then(result => {
+    //   console.log(result)
+    // }.catch(error)=> {
+    //   console.log(error)
+    // });
+
+    // === UPDATE ONE ===
+    // db.collection('users')
+    //   .updateOne(
+    //     { _id: new ObjectID('5e1ce3f0285b110118c1c490') },
+    //     {
+    //       $inc: {
+    //         age: 1,
+    //       },
+    //     }
+    //   )
+    //   .then(result => {
+    //     console.log(result);
+    //   })
+    //   .catch(error => {
+    //     console.log('error', error);
+    //   });
+
+    // === UPDATE MANY ===
+    // db.collection('tasks')
+    //   .updateMany({ completed: false }, { $set: { completed: true } })
+    //   .then(result => {
+    //     console.log(result);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
+
+    // === DELETE MANY ===
+    // db.collection('users')
+    //   .deleteMany({ age: 27 })
+    //   .then(result => {
+    //     console.log(result);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
+
+    // === DELETE ONE ===
     db.collection('tasks')
-      .find({ completed: false })
-      .toArray((error, tasks) => {
-        if (error) {
-          return console.log('Unable to find task');
-        }
-        console.log(tasks);
+      .deleteOne({
+        _id: new ObjectID('5e1ce7cb6a688502626ff236'),
+      })
+      .then(result => {
+        console.log(result);
+      })
+      .catch(error => {
+        console.log(error);
       });
   }
 );
