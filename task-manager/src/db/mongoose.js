@@ -1,33 +1,24 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 //to connect to the database
 //provide URL and options object
 mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api', {
   useNewUrlParser: true,
   useCreateIndex: true,
-});
-
-//Defining a model
-// const User = mongoose.model('user', {
-//   name: { type: String },
-//   age: { type: Number },
-// });
-
-const Task = mongoose.model('task', {
-  description: { type: String },
-  completed: { type: Boolean },
+  useFindAndModify: false,
 });
 
 //creating a new instance of the model
 // const me = new User({
-//   name: 'Andrew',
-//   age: 27,
+//   name: 'John     ',
+//   email: 'John@email.com     ',
+//   password: 'JohnJohn',
 // });
 
-const task = new Task({
-  description: 'Wash dishes',
-  completed: false,
-});
+// const chore = new Task({
+//   description: 'Buy groceries',
+// });
 
 //saving instance to the database. to save the model instance - use the save method. This returns a promise.
 // me.save()
@@ -38,11 +29,11 @@ const task = new Task({
 //     console.log('error', error);
 //   });
 
-chore
-  .save()
-  .then(() => {
-    console.log(chore);
-  })
-  .catch(error => {
-    console.log('error', error);
-  });
+// chore
+//   .save()
+//   .then(() => {
+//     console.log(chore);
+//   })
+//   .catch(error => {
+//     console.log('error', error);
+//   });
