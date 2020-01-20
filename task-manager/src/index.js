@@ -4,7 +4,7 @@ const userRouter = require('./routers/users');
 const taskRouter = require('./routers/tasks');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 //to get the data to use to create a new user
 //parses incoming JSON into an object
